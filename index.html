@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Shetakari APK Download</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            color: white;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
+        h1 {
+            margin-top: 20px;
+            font-size: 2.5rem;
+        }
+        p {
+            font-size: 1.2rem;
+        }
+        #scan-button {
+            background-color: #ff7f50;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+        #scan-button:hover {
+            background-color: #ff6347;
+        }
+        #preview {
+            display: none;
+            width: 300px;
+            height: 300px;
+            border: 5px solid white;
+            margin: 20px auto;
+        }
+        #message {
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            padding: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Royal Shetakari APK Download</h1>
+        <p>Click the button below to scan the QR code on your device and download the APK.</p>
+        <button id="scan-button" onclick="startScanner()">Start QR Code Scanner</button>
+        <video id="preview"></video>
+        <p id="message"></p>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 Royal Shetakari. All rights reserved.</p>
+    </div>
+
+    <script>
+        // Google Drive Direct Download Link for APK
+        const apkUrl = "https://drive.usercontent.google.com/u/0/uc?id=19bIN5mQ6f9jPQ4q97DgT-9-tSZXaR_3O&export=download";
+        const correctQRCodeData = "https://your-server.com/correct-qr-code"; // The expected QR code value
+        let scannerStarted = false;
+
+        function startScanner() {
+            if (scannerStarted) return;
+
+            scannerStarted = true;
+            const video = document.getElementById('preview');
+            video.style.display = "block";
+            const message = document.getElementById('message');
+            message.innerText = "Scanning QR code...";
+
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(function (stream) {
+                    video.srcObject = stream;
+                    video.play();
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+
+                    setInterval(function () {
+                        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                            canvas.width = video.videoWidth;
+                            canvas.height = video.videoHeight;
+                            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                            const code = jsQR(imageData.data, canvas.width, canvas.height);
+
+                            if (code) {
+                                if (code.data === correctQRCodeData) {
+                                    message.innerText = "QR code is correct! Downloading APK...";
+                                    video.style.display = "none";
+                                    window.location.href = apkUrl;
+                                } else {
+                                    message.innerText = "Invalid QR code!";
+                                }
+                            }
+                        }
+                    }, 500);
+                })
+                .catch(function (err) {
+                    console.log("Error: " + err);
+                    message.innerText = "Error starting scanner.";
+                });
+        }
+    </script>
+</body>
+</html>
